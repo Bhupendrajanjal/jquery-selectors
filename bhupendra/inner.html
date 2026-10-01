@@ -1,0 +1,973 @@
+!<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SLL - BOM Dashboard</title>
+
+<style>
+:root{
+  --primary:#0b3d91;
+  --primary-dark:#062b68;
+  --accent:#6dbc6b;
+  --bg:#eef3f8;
+  --card:#ffffff;
+  --text:#18212f;
+  --muted:#667085;
+  --border:#d9e1ea;
+  --danger:#c62828;
+  --shadow:0 8px 24px rgba(15,38,71,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#eef4f9 0%,#f7f9fc 100%);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+header{
+  background:linear-gradient(135deg,#0b3d91 0%,#1769aa 55%,#6dbc6b 100%);
+  color:#fff;
+  padding:18px 20px 22px;
+  text-align:center;
+  box-shadow:0 4px 18px rgba(0,0,0,.14);
+}
+.header-inner{max-width:1250px;margin:auto}
+.logo{
+  display:block;
+  width:min(210px,55vw);
+  max-height:70px;
+  object-fit:contain;
+  margin:0 auto 10px;
+  background:#fff;
+  padding:7px 12px;
+  border-radius:10px;
+}
+header h1{margin:0;font-size:clamp(22px,4vw,32px);letter-spacing:.3px}
+header p{margin:8px 0 0;font-size:14px;opacity:.95}
+.container{max-width:1250px;margin:24px auto;padding:0 16px 40px}
+.search-box{
+  background:var(--card);
+  padding:22px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(217,225,234,.8);
+}
+.search-box h2{margin:0 0 18px;font-size:21px;color:var(--primary)}
+.search-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr auto;
+  gap:12px;
+  align-items:end;
+}
+.field label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  color:#475467;
+  margin-bottom:6px;
+}
+input,select{
+  width:100%;
+  height:46px;
+  padding:10px 13px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  font-size:15px;
+  outline:none;
+  background:#fff;
+  transition:.2s;
+}
+input:focus,select:focus{
+  border-color:#1769aa;
+  box-shadow:0 0 0 3px rgba(23,105,170,.12);
+}
+button{
+  height:46px;
+  padding:0 18px;
+  border:0;
+  border-radius:9px;
+  background:var(--primary);
+  color:#fff;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+  white-space:nowrap;
+}
+button:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.search-actions{display:flex;gap:8px}
+.clear-btn{background:#64748b}
+.clear-btn:hover{background:#475569}
+#resultCount{
+  margin-top:16px;
+  padding:10px 12px;
+  border-radius:8px;
+  background:#f1f5f9;
+  color:#334155;
+  font-size:14px;
+  font-weight:700;
+}
+.bom-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+  gap:18px;
+  margin-top:22px;
+}
+.bom-card{
+  background:#fff;
+  border-radius:15px;
+  padding:19px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+.bom-card h3{
+  margin:0 0 15px;
+  color:var(--primary);
+  font-size:20px;
+  padding-bottom:12px;
+  border-bottom:2px solid #e8eef5;
+}
+.characteristics{margin:0}
+.characteristics div{
+  display:grid;
+  grid-template-columns:minmax(135px,42%) 1fr;
+  gap:8px;
+  padding:9px 0;
+  border-bottom:1px solid #edf1f5;
+  line-height:1.35;
+  font-size:14px;
+  word-break:break-word;
+}
+.characteristics div:last-child{border-bottom:0}
+.label{font-weight:700;color:#475467}
+.value{color:#101828}
+.pdf-btn{
+  width:100%;
+  margin-top:14px;
+  background:var(--danger);
+}
+.pdf-btn:hover{background:#9f1f1f}
+.empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:35px 20px;
+  background:#fff;
+  border-radius:15px;
+  box-shadow:var(--shadow);
+}
+.empty h3{margin:0 0 8px;color:#b42318}
+.badge{
+  display:inline-block;
+  margin-left:8px;
+  padding:3px 8px;
+  border-radius:999px;
+  background:#e8f5e9;
+  color:#256029;
+  font-size:11px;
+  vertical-align:middle;
+}
+footer{
+  text-align:center;
+  color:#667085;
+  font-size:12px;
+  padding:8px 16px 25px;
+}
+@media(max-width:850px){
+  .search-grid{grid-template-columns:1fr}
+  .search-actions{display:grid;grid-template-columns:1fr 1fr}
+  .bom-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  header{padding:15px 12px 18px}
+  .container{padding:0 10px 30px;margin-top:14px}
+  .search-box{padding:16px}
+  .bom-card{padding:15px}
+  .characteristics div{grid-template-columns:1fr;gap:3px}
+  .search-actions{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <img class="logo"
+         src="https://trackingstatus.in/wp-content/uploads/2024/11/Seabird-Logistics-Transport-Tracking.webp"
+         alt="Company Logo"
+         onerror="this.style.display='none'">
+    <h1>📋 SLL - BOM DASHBOARD</h1>
+    <p>Search BOM using any of the available characteristics</p>
+  </div>
+</header>
+
+
+<div class="container">
+
+    <div class="search-box">
+  <h2>🔎 SEARCH BOM</h2>
+  <div class="search-grid">
+    <div class="field">
+      <label for="searchInput">Search value</label>
+      <input type="text" id="searchInput"
+             placeholder="Enter FG No, Model, Material, Cluster, Country, etc."
+             autocomplete="off"
+             onkeyup="searchBOM()">
+    </div>
+    <div class="field">
+      <label for="characteristic">Search in</label>
+      <select id="characteristic">
+            <option value="all">Search All 14 Characteristics</option>
+            <option value="partNo">1.Fg Dashboard</option>
+            <option value="dashboarddescription">2.Dahboard Description</option>
+            <option value="country">3.Country</option>
+            <option value="plasticdashboard">4.Plastic Dashboard</option>
+            <option value="covercluster">5.Cover Plastic </option>
+            <option value="InstrumentCluster">6.Instrument Cluster</option>
+            <option value="Lockset">7.Lock Set</option>
+            <option value="Onofflabel">8.On Off Lable</option>
+            <option value="Fmradiolabel">9.Fm Radio </option>
+            <option value="plug">10.Plug</option>
+            <option value="button">11.Button</option>
+            <option value="label">12.Instruction Lable</option>
+            <option value="shocketcharger">13.Shocket Charger</option>
+            <option value="dashboardcolour">14.Db colour</option>
+
+        </select>
+    </div>
+    <div class="search-actions">
+      <button onclick="searchBOM()">🔍 SEARCH</button>
+      <button class="clear-btn" onclick="clearSearch()">↺ CLEAR</button>
+    </div>
+  </div>
+  <div id="resultCount" aria-live="polite"></div>
+</div>
+
+<div id="bomList" class="bom-grid"></div>
+
+</div>
+
+<script>
+
+/* =========================
+   BOM DATABASE
+   ========================= */
+
+const bomData = [
+
+    {
+        partNo: "52AZ0599",
+        dashboarddescription: "BAJAJ MAXIMA Z CNG BI-FUEL OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AM0450",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AT402446/AT402452",
+        Lockset: "52AZ0609",
+        Onofflabel: "AF232069",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"CNG,H,DOT,IDSS",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE",
+    },
+    
+    {
+        partNo: "52RA0230",
+        dashboarddescription: "MAX Z LPG OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AM0450",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AT402449/AT402453",
+        Lockset: "52AZ0609",
+        Onofflabel: "AF232069",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"LPG,H,DOT,IDSS",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE",
+    },
+     {
+        partNo: "52RA0274",
+        dashboarddescription: "MAX Z LPG MONOFUEL OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AF0658",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AM191051",
+        Lockset: "52AZ0609",
+        Onofflabel: "AF232069",
+         Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"H,DOT,IDSS",
+        shocketcharger:"AF201464",
+         dashboardcolour:"BEIGE",
+    },
+     {
+        partNo: "52BH0483",
+        dashboarddescription: "BAJAJ MAXIMA Z DSL OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AF0658",
+        covercluster: "52AL0897",
+       InstrumentCluster: "BH402402",
+        Lockset: "52BH0398",
+        Onofflabel: "BA231200",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"BA231200",
+        button:"H,DOT,W",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BROWN",
+    },
+    {
+        partNo: "52BB0732",
+        dashboarddescription: "BAJAJ MAXIMA X WIDE DSL OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AF0658",
+        covercluster: "52AL0897",
+       InstrumentCluster: "BB191070",
+        Lockset: "52BB0702",
+        Onofflabel: "AF232069",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"BA231200",
+        button:"H,DOT,W",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE",
+    },
+    {
+        partNo: "52BK0490",
+        dashboarddescription: "BAJAJ WEGO C9012 WIDER SCUDO",
+        country: "DOM",
+        plasticdashboard: "52BK0423",
+        covercluster: "52AH1615",
+       InstrumentCluster: "AH402433",
+        Lockset: "52BK0422",
+        Onofflabel: "AH182246",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"AH401469",
+        shocketcharger:"AN201243,AH403420",
+        dashboardcolour:"GREY"
+    },
+     {
+        partNo: "52AN0756",
+        dashboarddescription: "BAJAJ MAXIMA C CNG LONGER TRAY OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AN0626",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AT402446/AT402452",
+        Lockset: "52AN0738",
+        Onofflabel: "AF232069",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"CNG,H,DOT,IDSS",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE",
+    },
+     {
+        partNo: "52AL0937",
+        dashboarddescription: "BAJAJ MAXIMA C DSL LONGER TRAY OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AN0626",
+        covercluster: "52AL0897",
+       InstrumentCluster: "BB191070",
+        Lockset: "52AL0886",
+        Onofflabel: "BA231200",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"CNG,H,DOT,IDSS",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE",
+    },
+      {
+        partNo: "52AH1101",
+        dashboarddescription: "EV GOGO MAX Z",
+        country: "DOM",
+        plasticdashboard: "52AH0358",
+        covercluster: "NA",
+       InstrumentCluster: "AH402414",
+        Lockset: "52AH0617",
+        Onofflabel: "AH182246",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AF201464,AN201243",
+        dashboardcolour:"GREY",
+    },
+     {
+        partNo: "52BK0246",
+        dashboarddescription: "EV GOGO XW",
+        country: "DOM",
+        plasticdashboard: "52AH0358",
+        covercluster: "NA",
+       InstrumentCluster: "AH402414",
+        Lockset: "52BK0140",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AF201464,AN201243",
+        dashboardcolour:"GREY",
+    },
+    {
+        partNo: "52BK0159",
+        dashboarddescription: "EV GOGO CARGO",
+        country: "DOM",
+        plasticdashboard: "52BK0045",
+        covercluster: "NA",
+       InstrumentCluster: "AH402414",
+        Lockset: "52BK0001",
+        Onofflabel: "AH182246",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AF201464,AN201243",
+        dashboardcolour:"BEIGE",
+    },
+    {
+        partNo: "52AY0221",
+        dashboarddescription: "MAZ Z PET",
+        country: "MAYANMAR",
+        plasticdashboard: "52AA2753",
+        covercluster: "52AU0241",
+       InstrumentCluster: "AY402412",
+        Lockset: "52AY0187",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "52AA2339",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+    },
+    {
+        partNo: "52AY0188",
+        dashboarddescription: "MAZ Z FI PET",
+        country: "PHILLIPINES",
+        plasticdashboard: "52AU0249",
+        covercluster: "52AU0241",
+       InstrumentCluster: "AY402410",
+        Lockset: "52AY0187",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "52AA2339",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AN201243",
+         dashboardcolour:"BLACK",
+    },
+       {
+        partNo: "52RA0216",
+        dashboarddescription: "MAX Z EXPORT LPG",
+        country: "PERU",
+        plasticdashboard: "52AM0390",
+        covercluster: "52AU0241",
+       InstrumentCluster: "RA402416",
+        Lockset: "52RA0111",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "52AA2339",
+        plug:"NA",
+        label:"24161358",
+        button:"H,DOT,LPG EXP",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+    },
+      {
+        partNo: "52AN0733",
+        dashboarddescription: "MAX CARGO PET EXPORT",
+        country: "NEPAL ME",
+        plasticdashboard: "52AN0664",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AN191146",
+        Lockset: "52AN0666",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+        
+    },
+      {
+        partNo: "52AN0734",
+        dashboarddescription: "MAX CARGO PET EXPORT",
+        country: "SOMALIA",
+        plasticdashboard: "52AN0664",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AN191148",
+        Lockset: "52AN0666",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+    },
+      {
+        partNo: "52AL0935",
+        dashboarddescription: "MAX CARGO DSL EXPORT",
+        country: "ETHIOPIA",
+        plasticdashboard: "52AN0626",
+        covercluster: "52AL0897",
+       InstrumentCluster: "BB191072",
+        Lockset: "52AL0933",
+        Onofflabel: "BA231200",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"H,DOT,W",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+    },
+      {
+        partNo: "52AN0665",
+        dashboarddescription: "MAX CARGO FI PET EXPORT",
+        country: "PHILLIPINES",
+        plasticdashboard: "52AN0664",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AN191123",
+        Lockset: "52AN0666",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"24161358",
+        button:"H,DOT",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+    },
+      {
+        partNo: "52AN0725",
+        dashboarddescription: "MAX CARGO LPG EXPORT",
+        country: "CAMBODIA",
+        plasticdashboard: "52AN0626",
+        covercluster: "52AF0668",
+       InstrumentCluster: "NA",
+        Lockset: "52AN0747",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"24161358",
+        button:"H,DOT,LPG EXP",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+    },
+      {
+        partNo: "52AH0850",
+        dashboarddescription: "DB COMPLETE- E RICK",
+        country: "NA",
+        plasticdashboard: "AH182238",
+        covercluster: "NA",
+       InstrumentCluster: "AH402425",
+        Lockset: "52AH1439",
+        Onofflabel: "AH233017",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"AH401460",
+        shocketcharger:"AN201243",
+        dashboardcolour:"BLACK"
+    },
+     {
+        partNo: "52RA0179",
+        dashboarddescription: "DB Z LPG MONOFUEL OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AU0220",
+        covercluster: "52AF0668",
+       InstrumentCluster: "RA402412",
+        Lockset: "52AZ0561",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"24161358",
+        button:"H,DOT",
+        shocketcharger:"AN201243",
+         dashboardcolour:"BLACK",
+    },
+    
+    {
+        partNo: "52AN0665",
+        dashboarddescription: "DB CRGO PET PHILLIPINES ",
+        country: "MIKUNI ECU",
+        plasticdashboard: "52AN0664",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AN191123",
+        Lockset: "52AN0666",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AF201466",
+         dashboardcolour:"BLACK",
+    },
+    {
+        partNo: "52BK0141",
+        dashboarddescription: "DB X WIDE EV ETEC 16",
+        country: "NA",
+        plasticdashboard: "52BK0006",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AH402414",
+        Lockset: "52BK0140",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AN201243",
+         dashboardcolour:"BLACK",
+    },
+    {
+        partNo: "52BK0141",
+        dashboarddescription: "DB X WIDE EV ETEC 16",
+        country: "NA",
+        plasticdashboard: "52BK0006",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AH402414",
+        Lockset: "52BK0140",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AN201243",
+         dashboardcolour:"BLACK",
+    },
+    {
+        partNo: "52AL0935",
+        dashboarddescription: "DB CARGO DSL EXPORT",
+        country: "NA",
+        plasticdashboard: "52AN0626",
+        covercluster: "52AL0897",
+       InstrumentCluster: "BB191072",
+        Lockset: "52BK0140",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AN201243",
+         dashboardcolour:"BLACK",
+    },
+    {
+        partNo: "52AT0493",
+        dashboarddescription: "DB X WIDE CNG ",
+        country: "NA",
+        plasticdashboard: "52AF0658",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AT402437",
+        Lockset: "52AT0526",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"24161358",
+        button:"CNG,H,DOT",
+        shocketcharger:"AF201464",
+         dashboardcolour:"BLACK",
+    },
+    {
+        partNo: "52BK0141",
+        dashboarddescription: "DB X WIDE EV ETEC 16",
+        country: "NA",
+        plasticdashboard: "52BK0006",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AH402414",
+        Lockset: "52BK0140",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT",
+        shocketcharger:"AN201243",
+         dashboardcolour:"BLACK",
+    },{
+        partNo: "52AH0616",
+        dashboarddescription: "DB Z EV ",
+        country: "NA",
+        plasticdashboard: "52BK0006",
+        covercluster: "NA",
+       InstrumentCluster: "AH402414",
+        Lockset: "52AH0617",
+        Onofflabel: "AA231409",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"H,DOT,W",
+        shocketcharger:"AN201243",
+         dashboardcolour:"BLACK",
+    },
+    {
+        partNo: "52AH1626",
+        dashboarddescription: "DB MAX Z EV GOGO",
+        country: "NA",
+        plasticdashboard: "52AH1473",
+        covercluster: "NA",
+       InstrumentCluster: "AH402433",
+        Lockset: "52AH1625",
+        Onofflabel: "AH182246",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"AH401469",
+        shocketcharger:"AN201243",
+        dashboardcolour:"GREY",
+    },
+{
+        partNo: "52AH1470",
+        dashboarddescription: "DB MAX RE EV GOGO",
+        country: "NA",
+        plasticdashboard: "52AH1473",
+        covercluster: "NA",
+       InstrumentCluster: "AH402433",
+        Lockset: "52AH1474",
+        Onofflabel: "AH182246",
+        Fmradiolabel : "NA",
+        plug:"NA",
+        label:"NA",
+        button:"AH401469",
+        shocketcharger:"AN201243,AH403420",
+         dashboardcolour:"GREY",
+    },
+
+    
+{
+        partNo: "52AT0531",
+        dashboarddescription: "BAJAJ MAXIMA X WIDE CNG OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AM0450",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AT402446,AT402452",
+        Lockset: "52AT0526",
+        Onofflabel: "52AF0668",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"H,DOT,CNG,IDSS",
+        shocketcharger:"AF201464",
+         dashboardcolour:"BLACK",
+    },
+    /////***TOWARDS FINAL*** ///
+    {
+        partNo: "52AF1110",
+        dashboarddescription: "RE CNG AIR COOLED OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AM0450",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AT402446,AT402452",
+        Lockset: "52AF1096",
+        Onofflabel: "AF232069",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"DOT,CNG,IDSS",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE"
+    },
+    {
+        partNo: "52BA0982",
+        dashboarddescription: "RE DSL OBD 2B",
+        country: "SOP VEHICLE",
+        plasticdashboard: "52AF0658",
+        covercluster: "52BA0897",
+       InstrumentCluster: "BA191105",
+        Lockset: "52BA0867",
+        Onofflabel: "BA231200",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"BH233009",
+        button:"DOT,W",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE"
+
+      },
+      {
+        partNo: "52AM0448",
+        dashboarddescription: "RE LPG AIR COOLED OBD 2B",
+        country: "DOM",
+        plasticdashboard: "52AF0658",
+        covercluster: "52AF0668",
+       InstrumentCluster: "AT402449,AT402453",
+        Lockset: "52AF1096",
+        Onofflabel: "AF232069",
+        Fmradiolabel : "NA",
+        plug:"52AZ0604",
+        label:"24161358",
+        button:"DOT,LPG,IDSS",
+        shocketcharger:"AF201464",
+        dashboardcolour:"BEIGE"
+        
+      },
+
+
+    
+
+     
+
+
+
+
+    
+    
+
+
+
+
+];
+
+
+
+/* =========================
+   DISPLAY BOM
+   ========================= */
+
+function escapeHTML(value) {
+    return String(value ?? "NA")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function displayBOM(data) {
+    const list = document.getElementById("bomList");
+    const count = document.getElementById("resultCount");
+
+    list.innerHTML = "";
+    count.textContent = `Found BOM: ${data.length}`;
+
+    if (data.length === 0) {
+        list.innerHTML = `
+          <div class="empty">
+            <h3>❌ BOM Not Found</h3>
+            <p>Please check the search value or selected characteristic.</p>
+          </div>`;
+        return;
+    }
+
+    data.forEach(bom => {
+        const rows = [
+            ["1. FG Number", bom.partNo],
+            ["2. DB Description", bom.dashboarddescription],
+            ["3. Country", bom.country],
+            ["4. Plastic DB", bom.plasticdashboard],
+            ["5. Cover Cluster", bom.covercluster],
+            ["6. Instrument Cluster", bom.InstrumentCluster],
+            ["7. Lock Set", bom.Lockset],
+            ["8. ON/OFF Label", bom.Onofflabel],
+            ["9. FM Radio", bom.Fmradiolabel],
+            ["10. Plug", bom.plug],
+            ["11. Instruction Label", bom.label],
+            ["12. Button", bom.button],
+            ["13. Socket Charger", bom.shocketcharger],
+            ["14. DB Colour", bom.dashboardcolour]
+        ];
+
+        const rowsHTML = rows.map(([label, value]) => `
+          <div>
+            <span class="label">${escapeHTML(label)}</span>
+            <span class="value">${escapeHTML(value || "NA")}</span>
+          </div>
+        `).join("");
+
+        list.insertAdjacentHTML("beforeend", `
+          <article class="bom-card">
+            <h3>📕 ${escapeHTML(bom.partNo)}
+              <span class="badge">BOM</span>
+            </h3>
+            <div class="characteristics">${rowsHTML}</div>
+            ${bom.pdf ? `
+              <button class="pdf-btn" onclick="openPDF('${escapeHTML(bom.pdf)}')">
+                📄 Open BOM PDF
+              </button>` : ""}
+          </article>
+        `);
+    });
+}
+
+
+/* =========================
+   SEARCH FUNCTION
+   ========================= */
+
+function searchBOM() {
+
+    const search =
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const type =
+        document.getElementById("characteristic").value;
+
+    if (search === "") {
+
+        displayBOM(bomData);
+
+        return;
+    }
+
+    const result = bomData.filter(bom => {
+
+        if (type === "all") {
+
+            return Object.values(bom)
+                .some(value =>
+                    String(value)
+                    .toLowerCase()
+                    .includes(search)
+                );
+
+        }
+
+        return String(bom[type])
+            .toLowerCase()
+            .includes(search);
+
+    });
+
+    displayBOM(result);
+}
+
+
+/* =========================
+   OPEN PDF
+   ========================= */
+
+function clearSearch() {
+    document.getElementById("searchInput").value = "";
+    document.getElementById("characteristic").value = "all";
+    displayBOM(bomData);
+    document.getElementById("searchInput").focus();
+}
+
+function openPDF(fileName) {
+    if (!fileName || fileName === "undefined" || fileName === "null") {
+        alert("PDF file is not available for this BOM.");
+        return;
+    }
+    window.open(fileName, "_blank", "noopener,noreferrer");
+}
+
+
+/* INITIAL DISPLAY */
+
+displayBOM(bomData);
+
+</script>
+
+</body>
+</html>
